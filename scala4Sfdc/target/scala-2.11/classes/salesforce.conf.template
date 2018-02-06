@@ -1,8 +1,0 @@
-salesforce {
-  Username = "me@mycompany.com"
-  Password = "xxxxxxxxXXXXXXXXXXXXXXXXXXXXXXXX"
-  ConsumerKey = "xxxxxxxxxxxxxxxx.xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx.xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
-  ConsumerSecret = "xxxxxxxxxxxxxxxxxxx"
-  InstanceUrl = "https://xxxx.salesforce.com"
-  DataServiceUrl = "/services/data/v41.0"
-}

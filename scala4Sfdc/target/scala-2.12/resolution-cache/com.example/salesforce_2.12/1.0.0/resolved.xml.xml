@@ -4,7 +4,7 @@
 		module="salesforce_2.12"
 		revision="1.0.0"
 		status="integration"
-		publication="20180206164931"
+		publication="20180206171849"
 	>
 		<description>
 		Salesforce
