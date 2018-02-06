@@ -5,6 +5,7 @@ apps/
 etc/notes
 etc/scripts/get_access_token.sh
 scala/target/
+scala/src/main/resources/salesforce.conf
 src/appMenus/
 src/applications/
 src/assignmentRules/
