@@ -7,3 +7,5 @@ at https://medium.com/@wesleybatista/how-to-integrate-salesforce-data-into-your-
 
 *Further Resources*
 Defining Connected Apps, https://developer.salesforce.com/docs/atlas.en-us.api_rest.meta/api_rest/intro_defining_remote_access_applications.htm
+Obtaining Access Token using cURL?, https://developer.salesforce.com/forums/?id=906F00000009CYaIAM
+WesleyBatista/salesforce-object-exporter, https://github.com/WesleyBatista/salesforce-object-exporter/
