@@ -1,8 +1,0 @@
-force {
-  UserName = "me@mycompany.com"
-  PassWord = "xxxxxxxxXXXXXXXXXXXXXXXXXXXXXXXX"
-  ClientID = "xxxxxxxxxxxxxxxx.xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx.xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
-  ClientSecret = "xxxxxxxxxxxxxxxxxxx"
-  InstanceUrl = "https://xxxx.salesforce.com"
-  DataServiceUrl = "/services/data/v41.0"
-}
