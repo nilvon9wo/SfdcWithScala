@@ -4,6 +4,7 @@
 apps/
 etc/notes
 etc/scripts/get_access_token.sh
+scala/target/
 src/appMenus/
 src/applications/
 src/assignmentRules/
