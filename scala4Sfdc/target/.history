@@ -1,2 +1,0 @@
-;reload; set _root_.org.jetbrains.sbt.StructureKeys.sbtStructureOptions in Global := "download resolveClassifiers resolveSbtClassifiers" ;*/*:dumpStructureTo C:/Users/brian.kessler/AppData/Local/Temp/sbt-structure.xml; session clear-all
-all {file:/C:/training/sfdc/SfdcWithScala/scala4Sfdc/}root/products {file:/C:/training/sfdc/SfdcWithScala/scala4Sfdc/}root/test:products
