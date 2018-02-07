@@ -20,53 +20,38 @@ class SObject(
              ) {
 
   private val configuration = ConfigFactory.load("salesforce")
-  private val host = configuration.getString("salesforce.InstanceUrl")
   private val dataServiceUrl = configuration.getString("salesforce.DataServiceUrl")
 
-  private val fields = {
-    def describe = requestGet(s"$host$dataServiceUrl/sObjects/$sObjectName/describe")
+  def retrieveRecords: JsonArray = {
+    val describe = requestGet(s"$dataServiceUrl/sobjects/$sObjectName/describe")
+    val query = gson.fromJson(describe, classOf[DescribeResponse])
+      .fields.map(x => x.name)
+      .mkString("SELECT+", ",+", s"+FROM+$sObjectName")
 
-    gson.fromJson(describe, classOf[DescribeResponse]).fields.map(x => x.name)
-  }
-
-  private val query = fields.mkString("SELECT+", ",+", s"+FROM+$sObjectName")
-
-  def dumpNewLineDelimitedJson(): Unit = {
-    val bufferedWriter = new BufferedWriter(new FileWriter(new File(outputPath)))
-    retrieveRecords.forEach(x => {
-      bufferedWriter.write(x.toString)
-      bufferedWriter.newLine()
-    })
-    bufferedWriter.close()
-  }
-
-  private def retrieveRecords: JsonArray = {
-    def executeSOQL(soql: String) = requestGet(s"$host$dataServiceUrl/queryAll/?q=$soql")
-
-    val httpResponse = httpResponseParser(executeSOQL(query))
+    val httpResponse = httpResponseParser(requestGet(s"$dataServiceUrl/queryAll/?q=$query"))
     val parsedRecords = jsonParser.parse(gson.toJson(httpResponse.get("records"))).getAsJsonArray
     parsePaginatedResponses(httpResponse, parsedRecords)
   }
 
   private def parsePaginatedResponses(httpResponse: JsonObject, parsedRecords: JsonArray): JsonArray = {
     if (!httpResponse.get("done").getAsBoolean) {
-      def getNextPaginatedResponse(identifier: String) = httpResponseParser(requestGet(host + identifier))
-
-      val paginatedResponse = getNextPaginatedResponse(httpResponse.get("nextRecordsUrl").getAsString)
+      val paginatedResponse = httpResponseParser(requestGet(httpResponse.get("nextRecordsUrl").getAsString))
       parsedRecords.addAll(parsePaginatedResponses(paginatedResponse, parsedRecords))
     }
     parsedRecords
   }
 
-  private def requestGet(url: String) = {
-    val request = new HttpGet(url)
-    request.addHeader("Authorization", "Bearer " + utility.getAccessToken)
-    request.addHeader("Content-Type", "application/json")
+  private def requestGet(path: String) = {
+    val token = utility.getAccessToken
+    val request = new HttpGet(token.instance_url + path)
+    request.addHeader("Authorization", "Bearer " + token.access_token)
+    request.addHeader("Content-type", "application/json")
     httpResponseHandler.handleResponse(httpClient.execute(request))
   }
 
   private def httpResponseParser(response: String) =
     jsonParser.parse(gson.toJson(gson.fromJson(response, classOf[Response]))).getAsJsonObject
+
 }
 
 object SObject {

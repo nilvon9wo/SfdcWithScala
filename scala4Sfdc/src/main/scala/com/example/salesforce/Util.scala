@@ -15,7 +15,7 @@ class Util(
   private val grantService = "/services/oauth2/token?grant_type=password"
   private val configuration: Config = ConfigFactory.load("salesforce")
 
-  def getAccessToken: String = {
+  def getAccessToken: Token = {
     val httpPost = new HttpPost(s"$loginUrl$grantService" +
       createUrlParam("client_id", "ConsumerKey") +
       createUrlParam("client_secret", "ConsumerSecret") +
@@ -25,11 +25,10 @@ class Util(
 
     try {
       gson.fromJson(httpResponseHandler.handleResponse(httpClient.execute(httpPost)), classOf[Token])
-        .access_token
     }
     catch {
-      case _: java.io.IOException => ""
-      case _: java.net.SocketTimeoutException => ""
+      case _: java.io.IOException => throw new UtilException()
+      case _: java.net.SocketTimeoutException => throw new UtilException()
     }
   }
 

@@ -1,5 +1,5 @@
 package com.example.salesforce
 
-class UtilException {
+class UtilException extends Exception{
 
 }
