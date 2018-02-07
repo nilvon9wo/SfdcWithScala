@@ -1,5 +1,7 @@
 package com.example.salesforce
 
-class UtilException extends Exception{
+class UtilException(throwable: Throwable) extends Exception {
+  println(s"ERROR: $throwable")
 
 }
+

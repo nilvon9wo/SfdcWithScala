@@ -6,11 +6,13 @@ import org.apache.http.client.HttpClient
 import org.apache.http.client.methods.HttpPost
 import org.apache.http.impl.client.{BasicResponseHandler, HttpClientBuilder}
 
+import scala.util.{Failure, Success, Try}
+
 class Utility(
-            implicit val httpClient: HttpClient,
-            implicit val httpResponseHandler: BasicResponseHandler,
-            implicit val gson: Gson
-          ) {
+               implicit val httpClient: HttpClient,
+               implicit val httpResponseHandler: BasicResponseHandler,
+               implicit val gson: Gson
+             ) {
   private val loginUrl = "https://login.salesforce.com"
   private val grantService = "/services/oauth2/token?grant_type=password"
   private val configuration: Config = ConfigFactory.load("salesforce")
@@ -23,12 +25,9 @@ class Utility(
       createUrlParam("password", "Password")
     )
 
-    try {
-      gson.fromJson(httpResponseHandler.handleResponse(httpClient.execute(httpPost)), classOf[Token])
-    }
-    catch {
-      case _: java.io.IOException => throw new UtilException()
-      case _: java.net.SocketTimeoutException => throw new UtilException()
+    Try(httpResponseHandler.handleResponse(httpClient.execute(httpPost))) match {
+      case Success(response: String) => gson.fromJson(response, classOf[Token])
+      case Failure(throwable) => throw new UtilException(throwable)
     }
   }
 
