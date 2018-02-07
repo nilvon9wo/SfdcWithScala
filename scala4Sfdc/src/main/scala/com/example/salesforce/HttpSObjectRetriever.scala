@@ -42,7 +42,7 @@ class HttpSObjectRetriever(
   }
 
   private def convertToJsonObject(response: String) =
-    jsonParser.parse(gson.toJson(gson.fromJson(response, classOf[Response]))).getAsJsonObject
+    jsonParser.parse(gson.toJson(gson.fromJson(response, classOf[SObjectResponse]))).getAsJsonObject
 
   private def getResponseFor(path: String): String = {
     val token = utility.getAccessToken

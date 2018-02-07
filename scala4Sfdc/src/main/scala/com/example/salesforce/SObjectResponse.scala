@@ -1,6 +1,6 @@
 package com.example.salesforce
 
-case class Response(
+case class SObjectResponse(
                      totalSize: Int,
                      done: Boolean,
                      nextRecordsUrl: String,
