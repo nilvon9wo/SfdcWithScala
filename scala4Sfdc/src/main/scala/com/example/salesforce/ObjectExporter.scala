@@ -4,11 +4,9 @@ import java.io.{BufferedWriter, File, FileWriter}
 
 import com.google.gson.JsonArray
 
-object ObjectExporter {
-  def main(args: Array[String]): Unit = {
-    val sObjectName = valueOrDefault(args, 1, "Account")
-    val outputPath = valueOrDefault(args, 2, "target/Account.json")
-    val retrievedRecords = SObject.apply(sObjectName, outputPath).retrieveRecords
+class ObjectExporter(sObject: SObject) {
+  def exportRecords(outputPath: String): Unit = {
+    val retrievedRecords = sObject.retrieveRecords
     dumpNewLineDelimitedJson(retrievedRecords, outputPath)
   }
 
@@ -20,6 +18,18 @@ object ObjectExporter {
     })
     bufferedWriter.close()
   }
+}
+
+object ObjectExporter {
+  def main(args: Array[String]): Unit = {
+    val sObjectName = valueOrDefault(args, 1, "Account")
+    val sObject = SObject.apply(sObjectName)
+
+    val outputPath = valueOrDefault(args, 2, "target/Account.json")
+    new ObjectExporter(sObject).exportRecords(outputPath)
+  }
+
+  def apply(sObject: SObject) = new ObjectExporter(sObject)
 
   private def valueOrDefault(args: Array[String], index: Integer, default: String) = {
     val value = if (!args.isEmpty) {

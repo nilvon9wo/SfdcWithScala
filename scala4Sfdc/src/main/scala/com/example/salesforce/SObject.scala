@@ -7,8 +7,7 @@ import org.apache.http.client.methods.HttpGet
 import org.apache.http.impl.client.{BasicResponseHandler, HttpClientBuilder}
 
 class SObject(
-               sObjectName: String,
-               outputPath: String
+               sObjectName: String
              )(
                implicit val httpClient: HttpClient,
                implicit val httpResponseHandler: BasicResponseHandler,
@@ -59,5 +58,5 @@ object SObject {
   implicit val jsonParser: JsonParser = new JsonParser()
   implicit val utility: Util = new Util()
 
-  def apply(sObjectName: String, outputPath: String) = new SObject(sObjectName, outputPath)
+  def apply(sObjectName: String) = new SObject(sObjectName)
 }
