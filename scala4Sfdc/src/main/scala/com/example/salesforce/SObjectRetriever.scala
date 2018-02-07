@@ -24,7 +24,7 @@ class SObjectRetriever(
 
   def retrieveRecords: JsonArray = {
     val describe: String = getResponseFor(s"$dataServiceUrl/sobjects/$sObjectName/describe")
-    val query = gson.fromJson(describe, classOf[DescribeResponse])
+    val query = gson.fromJson(describe, classOf[SObjectDescribeResponse])
       .fields.map(x => x.name)
       .mkString("SELECT+", ",+", s"+FROM+$sObjectName")
 
