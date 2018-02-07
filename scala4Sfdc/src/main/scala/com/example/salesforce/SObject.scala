@@ -1,7 +1,5 @@
 package com.example.salesforce
 
-import java.io.{BufferedWriter, File, FileWriter}
-
 import com.google.gson.{Gson, JsonArray, JsonObject, JsonParser}
 import com.typesafe.config.ConfigFactory
 import org.apache.http.client.HttpClient
