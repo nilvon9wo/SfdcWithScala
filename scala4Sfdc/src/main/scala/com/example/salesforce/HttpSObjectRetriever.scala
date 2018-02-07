@@ -9,14 +9,14 @@ import org.apache.http.impl.client.{BasicResponseHandler, HttpClientBuilder}
 
 import scala.util.{Failure, Success, Try}
 
-class SObject(
+class HttpSObjectRetriever(
                sObjectName: String
              )(
                implicit val gson: Gson,
                implicit val httpClient: HttpClient,
                implicit val httpResponseHandler: BasicResponseHandler,
                implicit val jsonParser: JsonParser,
-               implicit val utility: SfdcAuthorizationUtility
+               implicit val utility: SfdcAuthorizer
              ) {
 
   private val configuration = ConfigFactory.load("salesforce")
@@ -56,24 +56,24 @@ class SObject(
     println(s"httpGet: $httpGet")
     Try(httpClient.execute(httpGet)) match {
       case Success(response: HttpResponse) => getResponseFor(response: HttpResponse)
-      case Failure(throwable) => throw new SObjectException(throwable)
+      case Failure(throwable) => throw new HttpSObjectRetrieverException(throwable)
     }
   }
 
   private def getResponseFor(httpReponse: HttpResponse): String = {
     Try(httpResponseHandler.handleResponse(httpReponse)) match {
       case Success(response: String) => response
-      case Failure(throwable) => throw new SObjectException(throwable)
+      case Failure(throwable) => throw new HttpSObjectRetrieverException(throwable)
     }
   }
 }
 
-object SObject {
+object HttpSObjectRetriever {
   implicit val gson: Gson = new Gson()
   implicit val httpClient: HttpClient = HttpClientBuilder.create().build()
   implicit val httpResponseHandler: BasicResponseHandler = new BasicResponseHandler()
   implicit val jsonParser: JsonParser = new JsonParser()
-  implicit val utility: SfdcAuthorizationUtility = new SfdcAuthorizationUtility()
+  implicit val utility: SfdcAuthorizer = new SfdcAuthorizer()
 
-  def apply(sObjectName: String) = new SObject(sObjectName)
+  def apply(sObjectName: String) = new HttpSObjectRetriever(sObjectName)
 }

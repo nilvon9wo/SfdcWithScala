@@ -9,7 +9,7 @@ import org.apache.http.impl.client.{BasicResponseHandler, HttpClientBuilder}
 
 import scala.util.{Failure, Success, Try}
 
-class SfdcAuthorizationUtility(
+class SfdcAuthorizer(
                implicit val httpClient: HttpClient,
                implicit val httpResponseHandler: BasicResponseHandler,
                implicit val gson: Gson
@@ -34,23 +34,23 @@ class SfdcAuthorizationUtility(
   private def getAccessToken(httpPost: HttpPost): SfdcAuthorizationToken = {
     Try(httpClient.execute(httpPost)) match {
       case Success(response: HttpResponse) => getAccessToken(response)
-      case Failure(throwable) => throw new SfdcAuthorizationUtilityException(throwable)
+      case Failure(throwable) => throw new SfdcAuthorizerException(throwable)
     }
   }
 
   private def getAccessToken(httpResponse: HttpResponse): SfdcAuthorizationToken = {
     Try(httpResponseHandler.handleResponse(httpResponse)) match {
       case Success(response: String) => gson.fromJson(response, classOf[SfdcAuthorizationToken])
-      case Failure(throwable) => throw new SfdcAuthorizationUtilityException(throwable)
+      case Failure(throwable) => throw new SfdcAuthorizerException(throwable)
     }
   }
 }
 
-object SfdcAuthorizationUtility {
+object SfdcAuthorizer {
   private implicit val httpClient: HttpClient = HttpClientBuilder.create().build()
   private implicit val httpResponseHandler: BasicResponseHandler = new BasicResponseHandler()
   private implicit val gson: Gson = new Gson()
 
-  def apply = new SfdcAuthorizationUtility()
+  def apply = new SfdcAuthorizer()
 }
 
