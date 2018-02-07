@@ -9,7 +9,7 @@ import org.apache.http.impl.client.{BasicResponseHandler, HttpClientBuilder}
 
 import scala.util.{Failure, Success, Try}
 
-class Utility(
+class SfdcAuthorizationUtility(
                implicit val httpClient: HttpClient,
                implicit val httpResponseHandler: BasicResponseHandler,
                implicit val gson: Gson
@@ -18,7 +18,7 @@ class Utility(
   private val grantService = "/services/oauth2/token?grant_type=password"
   private val configuration: Config = ConfigFactory.load("salesforce")
 
-  def getAccessToken: Token = {
+  def getAccessToken: SfdcAuthorizationToken = {
     def createUrlParam(paramName: String, propertyName: String): String = {
       s"&$paramName=${configuration.getString(s"salesforce.$propertyName")}"
     }
@@ -31,26 +31,26 @@ class Utility(
     ))
   }
 
-  private def getAccessToken(httpPost: HttpPost): Token = {
+  private def getAccessToken(httpPost: HttpPost): SfdcAuthorizationToken = {
     Try(httpClient.execute(httpPost)) match {
       case Success(response: HttpResponse) => getAccessToken(response)
-      case Failure(throwable) => throw new UtilityException(throwable)
+      case Failure(throwable) => throw new SfdcAuthorizationUtilityException(throwable)
     }
   }
 
-  private def getAccessToken(httpResponse: HttpResponse): Token = {
+  private def getAccessToken(httpResponse: HttpResponse): SfdcAuthorizationToken = {
     Try(httpResponseHandler.handleResponse(httpResponse)) match {
-      case Success(response: String) => gson.fromJson(response, classOf[Token])
-      case Failure(throwable) => throw new UtilityException(throwable)
+      case Success(response: String) => gson.fromJson(response, classOf[SfdcAuthorizationToken])
+      case Failure(throwable) => throw new SfdcAuthorizationUtilityException(throwable)
     }
   }
 }
 
-object Utility {
+object SfdcAuthorizationUtility {
   private implicit val httpClient: HttpClient = HttpClientBuilder.create().build()
   private implicit val httpResponseHandler: BasicResponseHandler = new BasicResponseHandler()
   private implicit val gson: Gson = new Gson()
 
-  def apply = new Utility()
+  def apply = new SfdcAuthorizationUtility()
 }
 

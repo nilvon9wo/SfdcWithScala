@@ -1,6 +1,6 @@
 package com.example.salesforce
 
-case class Token(
+case class SfdcAuthorizationToken(
                   access_token: String,
                   id: String,
                   instance_url: String,

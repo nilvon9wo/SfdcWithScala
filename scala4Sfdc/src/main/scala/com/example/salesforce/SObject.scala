@@ -16,7 +16,7 @@ class SObject(
                implicit val httpClient: HttpClient,
                implicit val httpResponseHandler: BasicResponseHandler,
                implicit val jsonParser: JsonParser,
-               implicit val utility: Utility
+               implicit val utility: SfdcAuthorizationUtility
              ) {
 
   private val configuration = ConfigFactory.load("salesforce")
@@ -73,7 +73,7 @@ object SObject {
   implicit val httpClient: HttpClient = HttpClientBuilder.create().build()
   implicit val httpResponseHandler: BasicResponseHandler = new BasicResponseHandler()
   implicit val jsonParser: JsonParser = new JsonParser()
-  implicit val utility: Utility = new Utility()
+  implicit val utility: SfdcAuthorizationUtility = new SfdcAuthorizationUtility()
 
   def apply(sObjectName: String) = new SObject(sObjectName)
 }
