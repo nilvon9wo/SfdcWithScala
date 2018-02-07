@@ -20,19 +20,19 @@ class SObject(
   private val dataServiceUrl = configuration.getString("salesforce.DataServiceUrl")
 
   def retrieveRecords: JsonArray = {
-    val describe = requestGet(s"$dataServiceUrl/sobjects/$sObjectName/describe")
+    val describe = request(s"$dataServiceUrl/sobjects/$sObjectName/describe")
     val query = gson.fromJson(describe, classOf[DescribeResponse])
       .fields.map(x => x.name)
       .mkString("SELECT+", ",+", s"+FROM+$sObjectName")
 
-    val initialResponse = convertToJsonObject(requestGet(s"$dataServiceUrl/queryAll/?q=$query"))
+    val initialResponse = convertToJsonObject(request(s"$dataServiceUrl/queryAll/?q=$query"))
     val parsedRecords = jsonParser.parse(gson.toJson(initialResponse.get("records"))).getAsJsonArray
     parseNextResponse(initialResponse, parsedRecords)
   }
 
   private def parseNextResponse(lastResponse: JsonObject, parsedRecords: JsonArray): JsonArray = {
     if (!lastResponse.get("done").getAsBoolean) {
-      val nextResponse = convertToJsonObject(requestGet(lastResponse.get("nextRecordsUrl").getAsString))
+      val nextResponse = convertToJsonObject(request(lastResponse.get("nextRecordsUrl").getAsString))
       parsedRecords.addAll(parseNextResponse(nextResponse, parsedRecords))
     }
     parsedRecords
@@ -41,7 +41,7 @@ class SObject(
   private def convertToJsonObject(response: String) =
     jsonParser.parse(gson.toJson(gson.fromJson(response, classOf[Response]))).getAsJsonObject
 
-  private def requestGet(path: String) = {
+  private def request(path: String) = {
     val token = utility.getAccessToken
     val request = new HttpGet(token.instance_url + path)
     request.addHeader("Authorization", "Bearer " + token.access_token)
