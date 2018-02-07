@@ -25,20 +25,20 @@ class SObject(
       .fields.map(x => x.name)
       .mkString("SELECT+", ",+", s"+FROM+$sObjectName")
 
-    val initialResponse = parseHttpResponse(requestGet(s"$dataServiceUrl/queryAll/?q=$query"))
+    val initialResponse = convertToJsonObject(requestGet(s"$dataServiceUrl/queryAll/?q=$query"))
     val parsedRecords = jsonParser.parse(gson.toJson(initialResponse.get("records"))).getAsJsonArray
     parseNextResponse(initialResponse, parsedRecords)
   }
 
   private def parseNextResponse(lastResponse: JsonObject, parsedRecords: JsonArray): JsonArray = {
     if (!lastResponse.get("done").getAsBoolean) {
-      val nextResponse = parseHttpResponse(requestGet(lastResponse.get("nextRecordsUrl").getAsString))
+      val nextResponse = convertToJsonObject(requestGet(lastResponse.get("nextRecordsUrl").getAsString))
       parsedRecords.addAll(parseNextResponse(nextResponse, parsedRecords))
     }
     parsedRecords
   }
 
-  private def parseHttpResponse(response: String) =
+  private def convertToJsonObject(response: String) =
     jsonParser.parse(gson.toJson(gson.fromJson(response, classOf[Response]))).getAsJsonObject
 
   private def requestGet(path: String) = {
