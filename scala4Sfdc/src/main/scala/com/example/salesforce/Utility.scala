@@ -34,14 +34,14 @@ class Utility(
   private def getAccessToken(httpPost: HttpPost): Token = {
     Try(httpClient.execute(httpPost)) match {
       case Success(response: HttpResponse) => getAccessToken(response)
-      case Failure(throwable) => throw new UtilException(throwable)
+      case Failure(throwable) => throw new UtilityException(throwable)
     }
   }
 
   private def getAccessToken(httpResponse: HttpResponse): Token = {
     Try(httpResponseHandler.handleResponse(httpResponse)) match {
       case Success(response: String) => gson.fromJson(response, classOf[Token])
-      case Failure(throwable) => throw new UtilException(throwable)
+      case Failure(throwable) => throw new UtilityException(throwable)
     }
   }
 }
