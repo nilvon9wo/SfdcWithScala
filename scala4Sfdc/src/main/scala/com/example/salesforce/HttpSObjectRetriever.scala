@@ -28,21 +28,20 @@ class HttpSObjectRetriever(
       .fields.map(x => x.name)
       .mkString("SELECT+", ",+", s"+FROM+$sObjectName")
 
-    val initialResponse = convertToJsonObject(getResponseFor(s"$dataServiceUrl/queryAll/?q=$query"))
-    val parsedRecords = jsonParser.parse(gson.toJson(initialResponse.get("records"))).getAsJsonArray
+    val initialResponse = convertToSObjectResponse(getResponseFor(s"$dataServiceUrl/queryAll/?q=$query"))
+    val parsedRecords = jsonParser.parse(gson.toJson(initialResponse.records)).getAsJsonArray
     parseNextResponse(initialResponse, parsedRecords)
   }
 
-  private def parseNextResponse(lastResponse: JsonObject, parsedRecords: JsonArray): JsonArray = {
-    if (!lastResponse.get("done").getAsBoolean) {
-      val nextResponse = convertToJsonObject(getResponseFor(lastResponse.get("nextRecordsUrl").getAsString))
+  private def parseNextResponse(lastResponse: SObjectResponse, parsedRecords: JsonArray): JsonArray = {
+    if (!lastResponse.done) {
+      val nextResponse = convertToSObjectResponse(getResponseFor(lastResponse.nextRecordsUrl))
       parsedRecords.addAll(parseNextResponse(nextResponse, parsedRecords))
     }
     parsedRecords
   }
 
-  private def convertToJsonObject(response: String) =
-    jsonParser.parse(gson.toJson(gson.fromJson(response, classOf[SObjectResponse]))).getAsJsonObject
+  private def convertToSObjectResponse(response: String) = gson.fromJson(response, classOf[SObjectResponse])
 
   private def getResponseFor(path: String): String = {
     val token = utility.getAccessToken
