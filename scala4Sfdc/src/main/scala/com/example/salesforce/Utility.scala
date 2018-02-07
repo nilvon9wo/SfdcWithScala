@@ -6,7 +6,7 @@ import org.apache.http.client.HttpClient
 import org.apache.http.client.methods.HttpPost
 import org.apache.http.impl.client.{BasicResponseHandler, HttpClientBuilder}
 
-class Util(
+class Utility(
             implicit val httpClient: HttpClient,
             implicit val httpResponseHandler: BasicResponseHandler,
             implicit val gson: Gson
@@ -37,11 +37,11 @@ class Util(
   }
 }
 
-object Util {
+object Utility {
   private implicit val httpClient: HttpClient = HttpClientBuilder.create().build()
   private implicit val httpResponseHandler: BasicResponseHandler = new BasicResponseHandler()
   private implicit val gson: Gson = new Gson()
 
-  def apply = new Util()
+  def apply = new Utility()
 }
 
