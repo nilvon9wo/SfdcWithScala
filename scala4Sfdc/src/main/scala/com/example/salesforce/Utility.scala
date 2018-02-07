@@ -2,6 +2,7 @@ package com.example.salesforce
 
 import com.google.gson.Gson
 import com.typesafe.config.{Config, ConfigFactory}
+import org.apache.http.HttpResponse
 import org.apache.http.client.HttpClient
 import org.apache.http.client.methods.HttpPost
 import org.apache.http.impl.client.{BasicResponseHandler, HttpClientBuilder}
@@ -18,14 +19,23 @@ class Utility(
   private val configuration: Config = ConfigFactory.load("salesforce")
 
   def getAccessToken: Token = {
-    val httpPost = new HttpPost(s"$loginUrl$grantService" +
+    getAccessToken(new HttpPost(s"$loginUrl$grantService" +
       createUrlParam("client_id", "ConsumerKey") +
       createUrlParam("client_secret", "ConsumerSecret") +
       createUrlParam("username", "Username") +
       createUrlParam("password", "Password")
-    )
+    ))
+  }
 
-    Try(httpResponseHandler.handleResponse(httpClient.execute(httpPost))) match {
+  private def getAccessToken(httpPost: HttpPost): Token = {
+    Try(httpClient.execute(httpPost)) match {
+      case Success(response: HttpResponse) => getAccessToken(response)
+      case Failure(throwable) => throw new UtilException(throwable)
+    }
+  }
+
+  private def getAccessToken(httpResponse: HttpResponse): Token = {
+    Try(httpResponseHandler.handleResponse(httpResponse)) match {
       case Success(response: String) => gson.fromJson(response, classOf[Token])
       case Failure(throwable) => throw new UtilException(throwable)
     }
