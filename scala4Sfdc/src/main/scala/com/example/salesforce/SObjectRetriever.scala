@@ -33,7 +33,7 @@ class SObjectRetriever(
     parseNextResponse(initialResponse, parsedRecords)
   }
 
-  private def parseNextResponse(lastResponse: SObjectResponse, parsedRecords: JsonArray): JsonArray = {
+  private def parseNextResponse(lastResponse: SObjectRecordsResponse, parsedRecords: JsonArray): JsonArray = {
     if (!lastResponse.done) {
       val nextResponse = convertToSObjectResponse(getResponseFor(lastResponse.nextRecordsUrl))
       parsedRecords.addAll(parseNextResponse(nextResponse, parsedRecords))
@@ -41,7 +41,7 @@ class SObjectRetriever(
     parsedRecords
   }
 
-  private def convertToSObjectResponse(response: String) = gson.fromJson(response, classOf[SObjectResponse])
+  private def convertToSObjectResponse(response: String) = gson.fromJson(response, classOf[SObjectRecordsResponse])
 
   private def getResponseFor(path: String): String = {
     val token = utility.getAccessToken
