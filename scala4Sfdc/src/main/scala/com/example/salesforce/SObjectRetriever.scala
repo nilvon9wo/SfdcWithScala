@@ -60,6 +60,7 @@ class SObjectRetriever(
   }
 
   private def getResponseFor(httpReponse: HttpResponse): String = {
+    println(s"httpReponse: $httpReponse")
     Try(httpResponseHandler.handleResponse(httpReponse)) match {
       case Success(response: String) => response
       case Failure(throwable) => throw new SObjectRetrieverException(throwable)
