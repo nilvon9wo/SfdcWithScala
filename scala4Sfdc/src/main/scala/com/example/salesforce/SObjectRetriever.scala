@@ -10,14 +10,14 @@ import org.apache.http.impl.client.{BasicResponseHandler, HttpClientBuilder}
 import scala.util.{Failure, Success, Try}
 
 class SObjectRetriever(
-               sObjectName: String
-             )(
-               implicit val gson: Gson,
-               implicit val httpClient: HttpClient,
-               implicit val httpResponseHandler: BasicResponseHandler,
-               implicit val jsonParser: JsonParser,
-               implicit val utility: SfdcAuthorizer
-             ) {
+                        sObjectName: String
+                      )(
+                        implicit val gson: Gson,
+                        implicit val httpClient: HttpClient,
+                        implicit val httpResponseHandler: BasicResponseHandler,
+                        implicit val jsonParser: JsonParser,
+                        implicit val utility: SfdcAuthorizer
+                      ) {
 
   private val configuration = ConfigFactory.load("salesforce")
   private val dataServiceUrl = configuration.getString("salesforce.DataServiceUrl")
@@ -52,7 +52,7 @@ class SObjectRetriever(
   }
 
   private def getResponseFor(httpGet: HttpGet): String = {
-    println(s"httpGet: $httpGet")
+    println(httpGet)
     Try(httpClient.execute(httpGet)) match {
       case Success(response: HttpResponse) => getResponseFor(response: HttpResponse)
       case Failure(throwable) => throw new SObjectRetrieverException(throwable)
@@ -60,7 +60,7 @@ class SObjectRetriever(
   }
 
   private def getResponseFor(httpReponse: HttpResponse): String = {
-    println(s"httpReponse: $httpReponse")
+    println(httpReponse)
     Try(httpResponseHandler.handleResponse(httpReponse)) match {
       case Success(response: String) => response
       case Failure(throwable) => throw new SObjectRetrieverException(throwable)

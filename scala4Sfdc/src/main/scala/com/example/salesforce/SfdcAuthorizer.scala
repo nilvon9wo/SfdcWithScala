@@ -10,15 +10,15 @@ import org.apache.http.impl.client.{BasicResponseHandler, HttpClientBuilder}
 import scala.util.{Failure, Success, Try}
 
 class SfdcAuthorizer(
-               implicit val httpClient: HttpClient,
-               implicit val httpResponseHandler: BasicResponseHandler,
-               implicit val gson: Gson
-             ) {
+                      implicit val httpClient: HttpClient,
+                      implicit val httpResponseHandler: BasicResponseHandler,
+                      implicit val gson: Gson
+                    ) {
   private val loginUrl = "https://login.salesforce.com"
   private val grantService = "/services/oauth2/token?grant_type=password"
   private val configuration: Config = ConfigFactory.load("salesforce")
 
-  def getAccessToken: SfdcAuthorizationToken = {
+  lazy val getAccessToken: SfdcAuthorizationToken = {
     def createUrlParam(paramName: String, propertyName: String): String = {
       s"&$paramName=${configuration.getString(s"salesforce.$propertyName")}"
     }
@@ -32,6 +32,7 @@ class SfdcAuthorizer(
   }
 
   private def getAccessToken(httpPost: HttpPost): SfdcAuthorizationToken = {
+    println(httpPost)
     Try(httpClient.execute(httpPost)) match {
       case Success(response: HttpResponse) => getAccessToken(response)
       case Failure(throwable) => throw new SfdcAuthorizerException(throwable)
@@ -39,6 +40,7 @@ class SfdcAuthorizer(
   }
 
   private def getAccessToken(httpResponse: HttpResponse): SfdcAuthorizationToken = {
+    println(httpResponse)
     Try(httpResponseHandler.handleResponse(httpResponse)) match {
       case Success(response: String) => gson.fromJson(response, classOf[SfdcAuthorizationToken])
       case Failure(throwable) => throw new SfdcAuthorizerException(throwable)
