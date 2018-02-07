@@ -19,6 +19,10 @@ class Utility(
   private val configuration: Config = ConfigFactory.load("salesforce")
 
   def getAccessToken: Token = {
+    def createUrlParam(paramName: String, propertyName: String): String = {
+      s"&$paramName=${configuration.getString(s"salesforce.$propertyName")}"
+    }
+
     getAccessToken(new HttpPost(s"$loginUrl$grantService" +
       createUrlParam("client_id", "ConsumerKey") +
       createUrlParam("client_secret", "ConsumerSecret") +
@@ -39,10 +43,6 @@ class Utility(
       case Success(response: String) => gson.fromJson(response, classOf[Token])
       case Failure(throwable) => throw new UtilException(throwable)
     }
-  }
-
-  private def createUrlParam(paramName: String, propertyName: String): String = {
-    s"&$paramName=${configuration.getString(s"salesforce.$propertyName")}"
   }
 }
 
